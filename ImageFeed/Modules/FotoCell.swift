@@ -7,10 +7,10 @@
 
 import UIKit
 
-class FotoCell: UITableViewCell {
+final class FotoCell: UITableViewCell {
     static let reused = "FotoCell"
     
-    //Closure init
+    
     var photoImageView: UIImageView = {
         let imageView = UIImageView()
         
@@ -26,9 +26,20 @@ class FotoCell: UITableViewCell {
         return imageView
     }()
     
+    var dateContainerView: UIView = {
+        var view = UIView()
+        
+        view.backgroundColor = .black.withAlphaComponent(0.2)
+
+        view.translatesAutoresizingMaskIntoConstraints = false
+     
+        
+        return view
+    }()
+    
     var dateLabel: PaddingLabel = {
         var label = PaddingLabel()
-        label.edgeInset = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
+      
         
         let currentDate = Date()
         let dateFormatter = DateFormatter()
@@ -37,14 +48,18 @@ class FotoCell: UITableViewCell {
         let stringDate = dateFormatter.string(from: currentDate)
         print(stringDate)
         
-        label.text = stringDate
-        //label.font = UIFont.boldSystemFont(ofSize: 25)
+   
         label.translatesAutoresizingMaskIntoConstraints = false
         
         
         
         label.textColor = .white
-        label.backgroundColor = .black.withAlphaComponent(0.2)
+        
+        label.font = UIFont(name: "SFPro-Regular", size: 13)
+        var paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineHeightMultiple = 1.16
+        label.attributedText = NSMutableAttributedString(string: "\(stringDate)", attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+
         
         return label
     }()
@@ -87,7 +102,8 @@ extension FotoCell {
     func setupViews() {
         contentView.addSubview(photoImageView)
         contentView.addSubview(likeButton)
-        photoImageView.addSubview(dateLabel)
+        photoImageView.addSubview(dateContainerView)
+        dateContainerView.addSubview(dateLabel)
     }
     
     func setupConstraints() {
@@ -104,14 +120,20 @@ extension FotoCell {
         likeButton.heightAnchor.constraint(equalToConstant: 44).isActive = true
         
         
-        dateLabel.leftAnchor.constraint(equalTo: photoImageView.leftAnchor, constant: 0).isActive = true
-        dateLabel.rightAnchor.constraint(equalTo: photoImageView.rightAnchor, constant: 0).isActive = true
-        dateLabel.bottomAnchor.constraint(equalTo: photoImageView.bottomAnchor, constant: 0).isActive = true
+        dateContainerView.leftAnchor.constraint(equalTo: photoImageView.leftAnchor, constant: 0).isActive = true
+        dateContainerView.rightAnchor.constraint(equalTo: photoImageView.rightAnchor, constant: 0).isActive = true
+        dateContainerView.bottomAnchor.constraint(equalTo: photoImageView.bottomAnchor, constant: 0).isActive = true
+        dateContainerView.heightAnchor.constraint(equalToConstant: 30).isActive = true
         
+        dateLabel.leftAnchor.constraint(equalTo: dateContainerView.leftAnchor, constant: 8).isActive = true
+        dateLabel.rightAnchor.constraint(equalTo: dateContainerView.rightAnchor, constant: -183).isActive = true
+        dateLabel.bottomAnchor.constraint(equalTo: dateContainerView.bottomAnchor, constant: -8).isActive = true
+        dateLabel.topAnchor.constraint(equalTo: dateContainerView.topAnchor, constant: 4).isActive = true
+
     }
 }
 
-class PaddingLabel: UILabel {
+final class PaddingLabel: UILabel {
 
     var edgeInset: UIEdgeInsets = .zero
 

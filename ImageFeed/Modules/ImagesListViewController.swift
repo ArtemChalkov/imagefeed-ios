@@ -14,7 +14,7 @@ final class ImagesListViewController: UIViewController {
     
     private lazy var tableView: UITableView = {
         let tableView = UITableView.init()
-        tableView.backgroundColor = .clear
+        tableView.backgroundColor = Colors.ypBlack
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(FotoCell.self, forCellReuseIdentifier: FotoCell.reused)
@@ -64,6 +64,7 @@ extension ImagesListViewController: UITableViewDataSource, UITableViewDelegate {
         
         let imageName = imagesList[indexPath.row]
         
+        cell.backgroundColor = Colors.ypBlack
         cell.update("\(imageName)")
         
         if indexPath.row % 2 == 0 {
