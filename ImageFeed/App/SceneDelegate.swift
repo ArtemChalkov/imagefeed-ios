@@ -20,7 +20,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(windowScene: windowScene)
         
         let imagesVC = ImagesListViewController()
-        window?.rootViewController = imagesVC
+        let profileVC = ProfileViewController()
+        
+        let tabBarVC = TabBarController()
+        
+        window?.rootViewController = tabBarVC
         window?.makeKeyAndVisible()
     }
 
