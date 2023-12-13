@@ -182,9 +182,9 @@
 		6FC9C0A02B0CF0C600EA51B6 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				12408B802B20BE0A00F151F0 /* TabBar */,
 				12408B7E2B20BDFB00F151F0 /* ImageList */,
 				12408B7F2B20BE0300F151F0 /* Profile */,
-				12408B802B20BE0A00F151F0 /* TabBar */,
 				12408B812B20BE1500F151F0 /* SingleImage */,
 			);
 			path = Modules;

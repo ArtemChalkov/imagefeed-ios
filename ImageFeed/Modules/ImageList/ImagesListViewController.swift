@@ -20,8 +20,6 @@ final class ImagesListViewController: UIViewController {
         tableView.register(FotoCell.self, forCellReuseIdentifier: FotoCell.reused)
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.separatorStyle = .none
-        //tableView.allowsSelection = false
-        
         return tableView
     }()
     
@@ -30,6 +28,16 @@ final class ImagesListViewController: UIViewController {
         super.viewDidLoad()
         setupViews()
         setupConstraints()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: animated)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: animated)
     }
    
 }
@@ -57,8 +65,6 @@ extension ImagesListViewController {
 
 extension ImagesListViewController: UITableViewDataSource, UITableViewDelegate {
     
-
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return imagesList.count
     }
@@ -78,25 +84,18 @@ extension ImagesListViewController: UITableViewDataSource, UITableViewDelegate {
         } else {
             cell.likeButton.isSelected = false
         }
-        
-        
         return cell
     }
     
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        //tableView.deselectRow(at: indexPath, animated: false)
-        
+
         let photoIndex = imagesList[indexPath.row]
-        
         let photo = UIImage(named: "\(photoIndex)")
-        
         let singleImageController = SingleImageViewController()
-       
-        //let navigationController = UINavigationController(rootViewController: singleImageController)
-        
-        navigationController?.pushViewController(singleImageController, animated: true)
+
+        singleImageController.modalPresentationStyle = .fullScreen
+        present(singleImageController, animated: true)
         
         singleImageController.photo = photo
     }
