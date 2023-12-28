@@ -2,8 +2,7 @@
 //  WebViewController.swift
 //  ImageFeed
 //
-//  Created by Artur Igberdin on 18.12.2023.
-//
+
 
 import UIKit
 import WebKit
@@ -67,7 +66,6 @@ class WebViewViewController: UIViewController {
            URLQueryItem(name: "scope", value: AccessScope)                     //5
          ]
         let url = urlComponents.url!
-        //let url = URL(string: "https://www.youtube.com/watch?v=695PN9xaEhs")!
         print(url)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
@@ -122,8 +120,7 @@ class WebViewViewController: UIViewController {
         progressView.topAnchor.constraint(equalTo: view.topAnchor, constant: 87).isActive = true
         progressView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         progressView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
-        
-        //navigationController?.navigationItem.titleView?.addSubview(progressView)
+
         
     }
 }

@@ -48,7 +48,6 @@ final class AuthViewController:  UIViewController {
     func setupConstraints() {
         
         logoImageView.topAnchor.constraint(equalTo: view.topAnchor,constant: 376).isActive = true
-        //logoImageView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 158).isActive = true
         logoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
         enterButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -124).isActive = true
@@ -58,16 +57,10 @@ final class AuthViewController:  UIViewController {
     }
    
     @objc func enterButtonTapped() {
-        
-        //Modal - Full Screen
-        
+
         let webViewVC = WebViewViewController()
         webViewVC.modalPresentationStyle = .fullScreen
-        
         webViewVC.delegate = self
-        
-        //let navigationVC = UINavigationController(rootViewController: webViewVC)
-        
         present(webViewVC, animated: true)
     }
 }
@@ -86,11 +79,7 @@ extension AuthViewController: WebViewViewControllerDelegate {
                 print(accessToken)
                 
                 self.oauth2TokenStorage.token = accessToken
-                
-                // Получаем экземпляр `Window` приложения
-                //guard let window = UIApplication.shared.windows.first else { fatalError("Invalid Configuration") }
-                
-                
+  
                 let keyWindow = UIWindow.key
                 
                 let tabBarVC = TabBarController()

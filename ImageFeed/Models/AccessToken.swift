@@ -2,8 +2,7 @@
 //  AccessToken.swift
 //  ImageFeed
 //
-//  Created by Artur Igberdin on 28.12.2023.
-//
+
 
 import Foundation
 

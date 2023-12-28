@@ -2,8 +2,7 @@
 //  TabBarViewController.swift
 //  ImageFeed
 //
-//  Created by Artur Igberdin on 06.12.2023.
-//
+
 
 import UIKit
 
