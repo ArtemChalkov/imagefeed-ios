@@ -9,6 +9,7 @@ import UIKit
 class SplashViewController: UIViewController {
     
     let oauth2TokenStorage = OAuth2TokenStorage()
+    let oauth2Service = OAuth2Service()
     
     let logoImageView: UIImageView = {
         let imageView = UIImageView()
@@ -56,6 +57,8 @@ class SplashViewController: UIViewController {
         let authVC = AuthViewController()
         let navigationVC = UINavigationController(rootViewController: authVC)
         
+        authVC.delegate = self
+        
         let keyWindow = UIWindow.key
         keyWindow?.rootViewController = navigationVC
     }
@@ -66,7 +69,32 @@ class SplashViewController: UIViewController {
         let keyWindow = UIWindow.key
         keyWindow?.rootViewController = tabBarVC
     }
-    
 }
 
+extension SplashViewController: AuthViewControllerDelegate {
+    
+    func authViewController(_ vc: AuthViewController, didAuthenticateWithCode code: String) {
+        
+        oauth2Service.fetchAuthToken(code: code) { result in
+
+            switch result {
+
+            case .success(let accessToken):
+
+                print(accessToken)
+
+                self.oauth2TokenStorage.token = accessToken
+
+                let keyWindow = UIWindow.key
+
+                let tabBarVC = TabBarController()
+                keyWindow?.rootViewController = tabBarVC
+
+
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+}
 
