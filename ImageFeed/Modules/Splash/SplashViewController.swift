@@ -5,10 +5,14 @@
 
 
 import UIKit
+import ProgressHUD
 
 class SplashViewController: UIViewController {
     
     let oauth2TokenStorage = OAuth2TokenStorage()
+    let oauth2Service = OAuth2Service()
+    let profileService = ProfileService.shared
+    let profileImageService = ProfileImageService.shared
     
     let logoImageView: UIImageView = {
         let imageView = UIImageView()
@@ -27,12 +31,21 @@ class SplashViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
+        
+        //ProgressHUD.show()
+        UIBlockingProgressHUD.show()
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             
-            if self.oauth2TokenStorage.token.isEmpty {
+            let accessToken = self.oauth2TokenStorage.token
+            
+            self.fetchProfile(token: accessToken)
+            
+            if accessToken.isEmpty {
                 self.navigateToAuthScreen()
+                UIBlockingProgressHUD.dismiss()
             } else {
                 self.navigateToFeedScreen()
+                UIBlockingProgressHUD.dismiss()
             }
         }
     }
@@ -56,6 +69,8 @@ class SplashViewController: UIViewController {
         let authVC = AuthViewController()
         let navigationVC = UINavigationController(rootViewController: authVC)
         
+        authVC.delegate = self
+        
         let keyWindow = UIWindow.key
         keyWindow?.rootViewController = navigationVC
     }
@@ -66,7 +81,85 @@ class SplashViewController: UIViewController {
         let keyWindow = UIWindow.key
         keyWindow?.rootViewController = tabBarVC
     }
-    
 }
 
+//MARK: - Business Logic
+extension SplashViewController {
+    
+    func fetchProfile(token: String) {
+    
+            profileService.fetchProfile(token) { result in
+                switch result {
+    
+                case .success(let profile):
+                    
+                    print(profile)
+                    
+                    self.profileImageService.fetchProfileImageURL(username: profile.username) { result in
+                        switch result {
+                            
+                        case .success(let profileImageURL):
+                            
+                            NotificationCenter.default                                     // 1
+                                .post(                                                     // 2
+                                    name: ProfileImageService.DidChangeNotification,       // 3
+                                    object: self,                                          // 4
+                                    userInfo: ["URL": profileImageURL])
+                            
+                            
+                        case .failure(let error):
+                            print(error)
+                        }
+                    }
+                    
+                    
+                    
+                    
+    
+                case .failure(let error):
+                    print(error)
+                }
+            }
+        }
+}
+
+extension SplashViewController: AuthViewControllerDelegate {
+    
+    func authViewController(_ vc: AuthViewController, didAuthenticateWithCode code: String) {
+        
+        UIBlockingProgressHUD.show()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            
+            self.oauth2Service.fetchAuthToken(code: code) { result in
+
+                switch result {
+
+                case .success(let accessToken):
+
+                    print(accessToken)
+
+                    self.oauth2TokenStorage.token = accessToken
+                    
+                    self.fetchProfile(token: accessToken)
+
+                    let keyWindow = UIWindow.key
+
+                    let tabBarVC = TabBarController()
+                    keyWindow?.rootViewController = tabBarVC
+                    
+                    UIBlockingProgressHUD.dismiss()
+
+
+                case .failure(let error):
+                    print(error)
+                    UIBlockingProgressHUD.dismiss()
+                }
+            }
+
+            
+        }
+        
+    }
+}
 

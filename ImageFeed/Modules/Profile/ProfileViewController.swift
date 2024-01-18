@@ -6,8 +6,12 @@
 //
 
 import UIKit
+import Kingfisher
 
 class ProfileViewController: UIViewController {
+    
+    let profileService = ProfileService.shared
+    let oauthTokenStorage = OAuth2TokenStorage()
     
     var photoImageView: UIImageView = {
         let imageView = UIImageView()
@@ -61,10 +65,30 @@ class ProfileViewController: UIViewController {
         super.viewDidLoad()
         setupViews()
         setupConstraints()
+        
+        fetchProfile()
+        
+        if let avatarURL = ProfileImageService.shared.avatarURL,// 16
+           let url = URL(string: avatarURL) {                   // 17
+            // TODO [Sprint 11]  Обновить аватар, если нотификация
+            // была опубликована до того, как мы подписались.
+            
+            //let imageUrl = URL(string: imageUrlPath)!
+            photoImageView.kf.setImage(with: url)
+        }
     }
     
-   
+    func fetchProfile() {
         
+        if let profile = profileService.profile {
+            self.profileNameLabel.text = profile.name
+            self.nikNameLabel.text = "@\(profile.username)"
+            self.statusLabel.text = profile.bio
+        }
+    }
+    
+
+    
     func setupViews() {
         view.backgroundColor = Colors.ypBlack
         view.addSubview(photoImageView)
@@ -96,5 +120,37 @@ class ProfileViewController: UIViewController {
         //statusLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -282).isActive = true
     }
     
+    deinit {
+        removeObserver()
+    }
+    
+    private func addObserver() {
+        NotificationCenter.default.addObserver(                 // 1
+            self,                                               // 2
+            selector: #selector(updateAvatar(notification:)),   // 3
+            name: ProfileImageService.DidChangeNotification,    // 4
+            object: nil)                                        // 5
+    }
+    
+    private func removeObserver() {
+        NotificationCenter.default.removeObserver(              // 6
+            self,                                               // 7
+            name: ProfileImageService.DidChangeNotification,    // 8
+            object: nil)                                        // 9
+    }
+    
+    @objc                                                       // 10
+    private func updateAvatar(notification: Notification) {     // 11
+        guard
+            isViewLoaded,                                       // 12
+            let userInfo = notification.userInfo,               // 13
+            let profileImageURL = userInfo["URL"] as? String,   // 14
+            let url = URL(string: profileImageURL) // 15
+        else { return }
+        
+        photoImageView.kf.setImage(with: url)
+        
+        // TODO [Sprint 11] Обновить аватар, используя Kingfisher
+    }
     
 }

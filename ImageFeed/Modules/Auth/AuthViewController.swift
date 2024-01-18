@@ -7,9 +7,15 @@
 
 import UIKit
 
+protocol AuthViewControllerDelegate: AnyObject {
+    func authViewController(_ vc: AuthViewController, didAuthenticateWithCode code: String)
+}
+
 final class AuthViewController:  UIViewController {
     
-    let oauth2Service = OAuth2Service()
+    var delegate: AuthViewControllerDelegate?
+    
+
     let oauth2TokenStorage = OAuth2TokenStorage()
     
     let logoImageView: UIImageView = {
@@ -65,31 +71,16 @@ final class AuthViewController:  UIViewController {
     }
 }
 
+
+
 extension AuthViewController: WebViewViewControllerDelegate {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
         
         print("code ->", code)
         
-        oauth2Service.fetchAuthToken(code: code) { result in
-            
-            switch result {
-                
-            case .success(let accessToken):
-                
-                print(accessToken)
-                
-                self.oauth2TokenStorage.token = accessToken
-  
-                let keyWindow = UIWindow.key
-                
-                let tabBarVC = TabBarController()
-                keyWindow?.rootViewController = tabBarVC
-                
-                
-            case .failure(let error):
-                print(error)
-            }
-        }
+        delegate?.authViewController(self, didAuthenticateWithCode: code)
+        
+
         
         //TODO: POST request
     }
