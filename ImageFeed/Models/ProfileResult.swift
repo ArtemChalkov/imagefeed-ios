@@ -1,9 +1,7 @@
 //
 //  ProfileResult.swift
 //  ImageFeed
-//
-//  Created by Artur Igberdin on 16.01.2024.
-//
+
 
 import Foundation
 

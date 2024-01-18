@@ -1,9 +1,7 @@
 //
 //  UIBlockingProgressHUD.swift
 //  ImageFeed
-//
-//  Created by Artur Igberdin on 12.01.2024.
-//
+
 
 import Foundation
 
