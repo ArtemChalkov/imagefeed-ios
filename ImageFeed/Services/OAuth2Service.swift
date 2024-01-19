@@ -16,9 +16,35 @@ protocol OAuth2ServiceProtocol {
 class OAuth2Service: OAuth2ServiceProtocol {
     
     let decoder = JSONDecoder.init()
+    //3. Создать сессию и запустить запрос
+    let session = URLSession.shared
     
-    func fetchAuthToken(code: String, completion: @escaping (Swift.Result<String, Error>)->()) {
+    private var task: URLSessionTask?
+    private var lastCode: String?
+    
+    func fetchAuthToken(code: String, completion: @escaping (Swift.Result<String, Error>)->Void) {
      
+//        assert(Thread.isMainThread)
+//        if task != nil {                                    // 5
+//            if lastCode != code {                           // 6
+//                task?.cancel()                              // 7
+//            } else {
+//                return                                      // 8
+//            }
+//        } else {
+//            if lastCode == code {                           // 9
+//                return
+//            }
+//        }
+//        lastCode = code
+        
+        
+        assert(Thread.isMainThread)
+        if lastCode == code { return }                      // 1
+        task?.cancel()                                      // 2
+        lastCode = code
+        
+        
         //1. Cобрать URL
         //Percent Encoding, ASCII,
         var urlComponents = URLComponents()
@@ -41,9 +67,7 @@ class OAuth2Service: OAuth2ServiceProtocol {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         
-        //3. Создать сессию и запустить запрос
         
-        var session = URLSession.shared
         
         let task = session.dataTask(with: request) { data, response, error in
             
@@ -75,28 +99,18 @@ class OAuth2Service: OAuth2ServiceProtocol {
                     print(Thread.current) //Переключаемся на 1-поток
                    
                     completion(Result.success(response.accessToken))
+                    self.task = nil
+                    if error != nil {
+                        self.lastCode = nil
+                    }
                 }
             } catch {
                 print(error)
                 
                 completion(.failure(error))
             }
-            
-            
         }
+        self.task = task
         task.resume()
-        
-        
-            //https://unsplash.com/oauth/token
-        
-        //client_id    Your application’s access key.
-        //client_secret    Your application’s secret key.
-        //redirect_uri    Your application’s redirect URI.
-        //code    The authorization code supplied to the callback by Unsplash.
-        //grant_type    Value “authorization_code”.
-      
-        //Response
-
-        
     }
 }
