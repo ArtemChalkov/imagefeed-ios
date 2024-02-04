@@ -2,7 +2,6 @@
 //  ImagesListService.swift
 //  ImageFeed
 //
-//  Created by Artur Igberdin on 30.01.2024.
 //
 
 import Foundation
