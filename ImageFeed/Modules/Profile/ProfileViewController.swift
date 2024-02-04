@@ -7,6 +7,7 @@
 
 import UIKit
 import Kingfisher
+import WebKit
 
 class ProfileViewController: UIViewController {
     
@@ -32,8 +33,34 @@ class ProfileViewController: UIViewController {
         button.widthAnchor.constraint(equalToConstant: 44).isActive = true
         button.heightAnchor.constraint(equalToConstant: 44).isActive = true
         
+        button.addTarget(nil, action: #selector(exitButtonTapped), for: .touchUpInside)
+        
         return button
     }()
+    
+    
+    @objc func exitButtonTapped() {
+        
+        func clean() {
+           // Очищаем все куки из хранилища.
+           HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
+           // Запрашиваем все данные из локального хранилища.
+           WKWebsiteDataStore.default().fetchDataRecords(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { records in
+              // Массив полученных записей удаляем из хранилища.
+              records.forEach { record in
+                 WKWebsiteDataStore.default().removeData(ofTypes: record.dataTypes, for: [record], completionHandler: {})
+              }
+           }
+        }
+        
+        
+        clean()
+        OAuth2TokenStorage().token = ""
+        
+        var keyWindow = UIWindow.key
+        
+        keyWindow?.rootViewController = SplashViewController()
+    }
     
     var profileNameLabel: UILabel = {
         var label = UILabel()
@@ -88,9 +115,7 @@ class ProfileViewController: UIViewController {
             self.statusLabel.text = profile.bio
         }
     }
-    
 
-    
     func setupViews() {
         view.backgroundColor = Colors.ypBlack
         view.addSubview(photoImageView)

@@ -9,7 +9,13 @@ import UIKit
 
 final class ImagesListViewController: UIViewController {
     
-    private let imagesList = Array(0...20)
+    private let imageListService = ImagesListService()
+    
+    private var photos: [Photo] = [] {
+        didSet {
+            tableView.reloadData()
+        }
+    }
     
     
     private lazy var tableView: UITableView = {
@@ -28,18 +34,29 @@ final class ImagesListViewController: UIViewController {
         super.viewDidLoad()
         setupViews()
         setupConstraints()
+        
+        
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(true)
+        
+        imageListService.fetchPhotosNextPage { photos in
+            
+            self.photos = photos
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)
     }
-
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
     }
-   
+    
 }
 
 //MARK: - Layout
@@ -65,58 +82,105 @@ extension ImagesListViewController {
 
 extension ImagesListViewController: UITableViewDataSource, UITableViewDelegate {
     
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        
+        //if indexPath.row + 1 == photos.count {
+        
+        
+        //}
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return imagesList.count
+        return photos.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: FotoCell.reused, for: indexPath) as! FotoCell
         
-        let imageName = imagesList[indexPath.row]
+        let photo = photos[indexPath.row]
         
         cell.backgroundColor = Colors.ypBlack
-        cell.update("\(imageName)")
+        cell.update(photo)
+        
+        cell.onLikeButtonTapped = { photoId in
+            
+            
+            
+            if let index = self.photos.firstIndex(where: { $0.id == photoId }) {
+                
+                let photo = self.photos[index]
+                
+                let isLike = !photo.isLiked
+                
+                UIBlockingProgressHUD.show()
+                self.imageListService.changeLike(photoId: photoId, isLike: isLike) { result in
+                    
+                    switch result {
+                    case .success():
+                        
+                        
+                        changeToNewPhoto(photo)
+                        UIBlockingProgressHUD.dismiss()
+                    case .failure(let error):
+                        print(error)
+                        UIBlockingProgressHUD.dismiss()
+                    }
+                }
+                
+                
+                func changeToNewPhoto(_ photo: Photo) {
+                    let newPhoto = Photo(
+                        id: photo.id,
+                        size: photo.size,
+                        createdAt: photo.createdAt,
+                        welcomeDescription: photo.welcomeDescription,
+                        thumbImageURL: photo.thumbImageURL,
+                        largeImageURL: photo.largeImageURL,
+                        isLiked: !photo.isLiked
+                    )
+                    // Заменяем элемент в массиве.
+                    //self.photos = self.photos.withReplaced(itemAt: index, newValue: newPhoto)
+                    
+                    self.photos[index] = newPhoto
+                }
+                
+                
+                
+            }
+            
+        }
         
         cell.selectionStyle = .none
-        
-        if indexPath.row % 2 == 0 {
-            cell.likeButton.isSelected = true
-        } else {
-            cell.likeButton.isSelected = false
-        }
         return cell
     }
     
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-
-        let photoIndex = imagesList[indexPath.row]
-        let photo = UIImage(named: "\(photoIndex)")
+        
+        let photo = photos[indexPath.row]
+        //let photoImage = UIImage(named: photo.thumbImageURL)
         let singleImageController = SingleImageViewController()
-
+        
         singleImageController.modalPresentationStyle = .fullScreen
         present(singleImageController, animated: true)
         
-        singleImageController.photo = photo
+        singleImageController.photoUrl = URL(string: photo.largeImageURL)//= UIImage(named: photo.largeImageURL)
     }
-
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         
-        let imageIndex = imagesList[indexPath.row]
-        guard let image = UIImage(named: "\(imageIndex)") else {
-            return 0
-        }
+        let photo = photos[indexPath.row]
+        //        guard let image = UIImage(named: photo.thumbImageURL) else {
+        //            return 0
+        //        }
         let imageInsets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
         let imageViewWidth = tableView.bounds.width - imageInsets.left - imageInsets.right
-        let imageWidth = image.size.width
+        let imageWidth = photo.size.width
         let scale = imageViewWidth / imageWidth
-        let cellHeight = image.size.height * scale + imageInsets.top + imageInsets.bottom
+        let cellHeight = photo.size.height * scale + imageInsets.top + imageInsets.bottom
+        print("cell height ->",cellHeight)
         return cellHeight
     }
-
-    
-    
-    
 }
 
 

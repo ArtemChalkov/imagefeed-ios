@@ -9,7 +9,7 @@ import UIKit
 
 class SingleImageViewController: UIViewController {
     
-    var photo: UIImage?
+    var photoUrl: URL?
     
     lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -55,8 +55,8 @@ class SingleImageViewController: UIViewController {
         return button
     }()
     
-    func update(_ photo: UIImage) {
-        self.photo = photo
+    func update(_ photoUrl: URL) {
+        self.photoUrl = photoUrl
     }
     
     override func viewDidLoad() {
@@ -68,7 +68,11 @@ class SingleImageViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        photoImageView.image = self.photo
+        
+        //photoImageView.image = self.photo
+        
+        photoImageView.kf.setImage(with: photoUrl)
+        
     }
     
     func setupViews() {
@@ -108,13 +112,13 @@ class SingleImageViewController: UIViewController {
     //MARK: - Event Handler
     @objc func shareButtonTapped(_ sender: UIButton) {
         
-        if let image = self.photo {
-            let share = UIActivityViewController(
-                activityItems: [image],
-                applicationActivities: nil
-            )
-            present(share, animated: true, completion: nil)
-        }
+//        if let image = self.photo {
+//            let share = UIActivityViewController(
+//                activityItems: [image],
+//                applicationActivities: nil
+//            )
+//            present(share, animated: true, completion: nil)
+//        }
     }
     
     @objc func backButtonTapped() {
