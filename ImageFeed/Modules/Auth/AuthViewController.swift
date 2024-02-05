@@ -63,7 +63,8 @@ final class AuthViewController:  UIViewController {
     }
    
     @objc func enterButtonTapped() {
-
+        
+        print(Thread.current)
         let webViewVC = WebViewViewController()
         webViewVC.modalPresentationStyle = .fullScreen
         webViewVC.delegate = self
@@ -76,11 +77,16 @@ final class AuthViewController:  UIViewController {
 extension AuthViewController: WebViewViewControllerDelegate {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
         
+        vc.dismiss(animated: true)
         print("code ->", code)
         
         delegate?.authViewController(self, didAuthenticateWithCode: code)
         
+        self.dismiss(animated: true)
 
+        //let keyWindow = UIWindow.key
+        
+        //keyWindow?.rootViewController = SplashViewController()
         
         //TODO: POST request
     }

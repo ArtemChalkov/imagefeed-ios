@@ -12,13 +12,30 @@ final class ImagesListService {
     let decoder = JSONDecoder.init()
     let token = OAuth2TokenStorage().token
     
+    static let DidChangeNotification = Notification.Name(rawValue: "ImageListProviderDidChange")
+    
+    
     private (set) var photos: [Photo] = []
     
     private var lastLoadedPage: Int?
     
     func fetchPhotosNextPage(completion: @escaping ([Photo])->()) {
         
+        
+        
         let nextPage = lastLoadedPage == nil ? 1 : lastLoadedPage! + 1
+        
+        lastLoadedPage = nextPage
+        
+        print(lastLoadedPage)
+        
+        
+        
+//        if lastLoadedPage == nil {
+//            lastLoadedPage = 1
+//        } else {
+//            lastLoadedPage = lastLoadedPage! + 1
+//        }
         
         //1. URL + Parameters
         var urlComponents = URLComponents()
@@ -89,7 +106,7 @@ final class ImagesListService {
             
             let photo = Photo(id: item.id,
                               size: CGSize(width: item.width, height: item.height),
-                              createdAt: isoDateFormatter.date(from: item.updatedAt),
+                              createdAt: isoDateFormatter.date(from: item.updatedAt ?? ""),
                               welcomeDescription: item.description,
                               thumbImageURL: thumbUrl,
                               largeImageURL: largeUrl,

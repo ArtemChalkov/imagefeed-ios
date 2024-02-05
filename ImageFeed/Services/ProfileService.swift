@@ -42,6 +42,12 @@ final class ProfileService {
         //3. Call
         let task = session.dataTask(with: request) { data, response, error in
             
+            if let httpResponse = response as? HTTPURLResponse {
+                print("error \(httpResponse.statusCode)")
+            }
+            
+            print("json ->", data?.prettyPrintedJSONString)
+            
             if let error = error {
                 print(error.localizedDescription)
                 print("thread ->", Thread.current)

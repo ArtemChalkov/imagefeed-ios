@@ -47,7 +47,7 @@ final class ProfileImageService {
         //2. Request
         
         var request = URLRequest.init(url: url)
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.setValue("Bearer \(OAuth2TokenStorage().token)", forHTTPHeaderField: "Authorization")
         
         print("image request ->", request)
         

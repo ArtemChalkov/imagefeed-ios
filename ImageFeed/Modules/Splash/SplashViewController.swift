@@ -32,6 +32,8 @@ class SplashViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
+        print(self.oauth2TokenStorage.token)
+        //self.oauth2TokenStorage.token = ""
 
         //ProgressHUD.show()
         UIBlockingProgressHUD.show()
@@ -40,18 +42,21 @@ class SplashViewController: UIViewController {
             let accessToken = self.oauth2TokenStorage.token
 
             if accessToken.isEmpty {
-                self.navigateToAuthScreen()
                 UIBlockingProgressHUD.dismiss()
+                self.navigateToAuthScreen()
+               
             } else {
 
-                self.fetchProfile(token: accessToken) { //[weak self] in
+                let accessToken = self.oauth2TokenStorage.token
+                
+                self.fetchProfile(token: accessToken) { [weak self] in
 
-                    //guard let self = self else { return }
-
-                    self.navigateToFeedScreen()
+                    guard let self = self else { return }
                     UIBlockingProgressHUD.dismiss()
+                    self.navigateToFeedScreen()
+                    
                 }
-                UIBlockingProgressHUD.dismiss()
+                //UIBlockingProgressHUD.dismiss()
             }
         }
     }
@@ -77,8 +82,10 @@ class SplashViewController: UIViewController {
         
         authVC.delegate = self
         
-        let keyWindow = UIWindow.key
-        keyWindow?.rootViewController = navigationVC
+        //let keyWindow = UIWindow.key
+        //keyWindow?.rootViewController = navigationVC
+        
+        self.present(navigationVC, animated: true)
     }
     
     func navigateToFeedScreen() {
@@ -94,9 +101,9 @@ extension SplashViewController {
     
     func fetchProfile(token: String, success: @escaping () -> Void) {
     
-            profileService.fetchProfile(token) {  result in
+            profileService.fetchProfile(token) { [weak self]  result in
                 
-                //guard let self else { return }
+                guard let self else { return }
                 
                 switch result {
                     
@@ -177,8 +184,10 @@ extension SplashViewController: AuthViewControllerDelegate {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             
-            self.oauth2Service.fetchAuthToken(code: code) { result in
+            self.oauth2Service.fetchAuthToken(code: code) { [weak self] result in
 
+                guard let self else { return }
+                
                 switch result {
 
                 case .success(let accessToken):

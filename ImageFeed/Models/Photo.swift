@@ -18,7 +18,7 @@ struct Photo {
 
 struct PhotoResult: Codable {
     let id: String
-    let updatedAt: String //"2016-05-03T11:00:28-04:00"
+    let updatedAt: String? //"2016-05-03T11:00:28-04:00"
     //let createdAt: String
     let description: String?
     

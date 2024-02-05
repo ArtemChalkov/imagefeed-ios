@@ -113,7 +113,7 @@ extension FotoCell {
         
         let url = URL.init(string: photo.thumbImageURL)
         photoImageView.kf.setImage(with: url)
-        
+                
         dateLabel.text =  convertDateToString(photo.createdAt)
    
         likeButton.isSelected = photo.isLiked

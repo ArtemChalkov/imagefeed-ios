@@ -97,6 +97,8 @@ class ProfileViewController: UIViewController {
         
         fetchProfile()
         
+        addObserver()
+        
         if let avatarURL = ProfileImageService.shared.avatarURL,// 16
            let url = URL(string: avatarURL) {                   // 17
             // TODO [Sprint 11]  Обновить аватар, если нотификация
