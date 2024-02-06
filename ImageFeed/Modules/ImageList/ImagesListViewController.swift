@@ -11,14 +11,13 @@ final class ImagesListViewController: UIViewController {
     
     private let imageListService = ImagesListService()
     
-    private var photos: [Photo] = []
-//    {
-//        didSet {
-//            tableView.reloadData()
-//        }
-//    }
+    private var photos: [Photo] = [] {
+        didSet {
+            tableView.reloadData()
+        }
+    }
     
-    var fetchPhotosIsInProcess = false
+    //var fetchPhotosIsNotInProcess = false
     
     private lazy var tableView: UITableView = {
         let tableView = UITableView.init()
@@ -41,7 +40,7 @@ final class ImagesListViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(true)
-        fetchNextPage()
+        fetchPhotosNextPage()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -63,23 +62,27 @@ final class ImagesListViewController: UIViewController {
 //MARK: - Business Logic
 extension ImagesListViewController {
     
-    func fetchNextPage() {
-        if fetchPhotosIsInProcess == false {
-            self.fetchPhotosIsInProcess = true
-            imageListService.fetchPhotosNextPage { photos in
-                
-                self.photos += photos
-                
-                //ImagesListService.DidChangeNotification
-                NotificationCenter.default                                     // 1
-                    .post(                                                     // 2
-                        name: ImagesListService.DidChangeNotification,       // 3
-                        object: self,                                          // 4
-                        userInfo: ["photos": photos])
-                
-                self.fetchPhotosIsInProcess = false
-            }
+    func fetchPhotosNextPage() {
+        
+        //если идёт закачка, то нового сетевого запроса не создаётся, а выполнение функции прерывается;
+        //guard fetchPhotosIsNotInProcess == true else { return }
+       
+        //self.fetchPhotosIsNotInProcess = false
+        
+        imageListService.fetchPhotosNextPage { photos in
+            
+            self.photos += photos
+            
+            //ImagesListService.DidChangeNotification
+            NotificationCenter.default                                     // 1
+                .post(                                                     // 2
+                    name: ImagesListService.DidChangeNotification,       // 3
+                    object: self,                                          // 4
+                    userInfo: ["photos": photos])
+            
+            //self.fetchPhotosIsNotInProcess = true
         }
+        
     }
 }
 
@@ -143,7 +146,8 @@ extension ImagesListViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         
         if indexPath.row + 1 == photos.count {
-            fetchNextPage()
+            print("will display ->", #line)
+            fetchPhotosNextPage()
         }
     }
     
@@ -158,6 +162,8 @@ extension ImagesListViewController: UITableViewDataSource, UITableViewDelegate {
         
         cell.backgroundColor = Colors.ypBlack
         cell.update(photo)
+        
+        cell.setIsLiked(!photo.isLiked)
         
         cell.onLikeButtonTapped = { photoId in
             

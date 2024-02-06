@@ -85,7 +85,19 @@ class SingleImageViewController: UIViewController {
         
         //photoImageView.image = self.photo
         
-        photoImageView.kf.setImage(with: photoUrl)
+        //photoImageView.kf.setImage(with: photoUrl)
+        
+        UIBlockingProgressHUD.show()
+        photoImageView.kf.setImage(with: photoUrl) { result in
+            switch result {
+            case .success(_):
+                
+                UIBlockingProgressHUD.dismiss()
+                
+            case .failure(let error):
+                print(error)
+            }
+        }
         
     }
     

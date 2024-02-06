@@ -39,27 +39,56 @@ class ProfileViewController: UIViewController {
     }()
     
     
-    @objc func exitButtonTapped() {
+    func logout() {
         
         func clean() {
-           // Очищаем все куки из хранилища.
-           HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
-           // Запрашиваем все данные из локального хранилища.
-           WKWebsiteDataStore.default().fetchDataRecords(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { records in
-              // Массив полученных записей удаляем из хранилища.
-              records.forEach { record in
-                 WKWebsiteDataStore.default().removeData(ofTypes: record.dataTypes, for: [record], completionHandler: {})
-              }
-           }
+            // Очищаем все куки из хранилища.
+            HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
+            // Запрашиваем все данные из локального хранилища.
+            WKWebsiteDataStore.default().fetchDataRecords(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { records in
+                // Массив полученных записей удаляем из хранилища.
+                records.forEach { record in
+                    WKWebsiteDataStore.default().removeData(ofTypes: record.dataTypes, for: [record], completionHandler: {})
+                }
+            }
         }
         
         
         clean()
         OAuth2TokenStorage().token = ""
         
-        var keyWindow = UIWindow.key
+        let keyWindow = UIWindow.key
         
         keyWindow?.rootViewController = SplashViewController()
+    }
+    
+    @objc func exitButtonTapped() {
+        
+        let alertModel = AlertModel(title: "Пока, пока!", message: "Уверены что хотите выйти?", buttonText: "Да", cancelText: "Нет")
+        //
+        //        let alertPresenter = AlertPresenter()
+        //
+        //        alertPresenter.show(model: alertModel, controller: self)
+        //
+        //        alertPresenter.completion = {
+        //            print("alert", #line)
+        //
+        //            self.logout()
+        //        }
+        
+        let refreshAlert = UIAlertController(title: alertModel.title, message: alertModel.message, preferredStyle: .alert)
+        
+        refreshAlert.addAction(UIAlertAction(title: "Да", style: .default, handler: { (action: UIAlertAction!) in
+            print("Handle Ok logic here")
+            self.logout()
+        }))
+        
+        refreshAlert.addAction(UIAlertAction(title: "Нет", style: .cancel, handler: { (action: UIAlertAction!) in
+            print("Handle Cancel Logic here")
+        }))
+        
+        present(refreshAlert, animated: true, completion: nil)
+        
     }
     
     var profileNameLabel: UILabel = {
@@ -117,7 +146,7 @@ class ProfileViewController: UIViewController {
             self.statusLabel.text = profile.bio
         }
     }
-
+    
     func setupViews() {
         view.backgroundColor = Colors.ypBlack
         view.addSubview(photoImageView)
@@ -131,7 +160,7 @@ class ProfileViewController: UIViewController {
         photoImageView.topAnchor.constraint(equalTo: view.topAnchor, constant: 76).isActive = true
         photoImageView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 16).isActive = true
         //photoImageView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -289).isActive = true
-       
+        
         exitButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 89).isActive = true
         //exitButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 315).isActive = true
         exitButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -16).isActive = true
@@ -139,11 +168,11 @@ class ProfileViewController: UIViewController {
         profileNameLabel.topAnchor.constraint(equalTo: photoImageView.bottomAnchor, constant: 8).isActive = true
         profileNameLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 16).isActive = true
         //profileNameLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -118).isActive = true
-       
+        
         nikNameLabel.topAnchor.constraint(equalTo: profileNameLabel.bottomAnchor, constant: 8).isActive = true
         nikNameLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 16).isActive = true
         //nikNameLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -260).isActive = true
-       
+        
         statusLabel.topAnchor.constraint(equalTo: nikNameLabel.bottomAnchor, constant: 8).isActive = true
         statusLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 16).isActive = true
         //statusLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -282).isActive = true

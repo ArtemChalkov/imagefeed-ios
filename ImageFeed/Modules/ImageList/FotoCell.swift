@@ -39,29 +39,21 @@ final class FotoCell: UITableViewCell {
     
     func convertDateToString(_ date: Date?) -> String {
         guard let currentDate = date else { return "" }
-        let dateFormatter = DateFormatter()
-        dateFormatter.locale = Locale(identifier: "ru_RU")
-        dateFormatter.dateFormat = "d LLLL YYYY"
-        let stringDate = dateFormatter.string(from: currentDate)
+        
+        let stringDate = DateFormatter.mediumDateFormatter.string(from: currentDate)
         return stringDate
     }
     
     var dateLabel: PaddingLabel = {
         var label = PaddingLabel()
-      
-        let currentDate = Date()
-        let dateFormatter = DateFormatter()
-        dateFormatter.locale = Locale(identifier: "ru_RU")
-        dateFormatter.dateFormat = "d LLLL YYYY"
-        let stringDate = dateFormatter.string(from: currentDate)
-        print(stringDate)
+
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textColor = .white
         
         label.font = UIFont(name: "SFPro-Regular", size: 13)
         var paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.16
-        label.attributedText = NSMutableAttributedString(string: "\(stringDate)", attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+        label.attributedText = NSMutableAttributedString(string: "\("")", attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
 
         
         return label
@@ -116,7 +108,13 @@ extension FotoCell {
                 
         dateLabel.text =  convertDateToString(photo.createdAt)
    
-        likeButton.isSelected = photo.isLiked
+        //likeButton.isSelected = photo.isLiked
+    }
+    
+    func setIsLiked(_ isLiked: Bool) {
+        //likeButton.isSelected = photo.isLiked
+        
+        likeButton.isSelected = isLiked
     }
 }
 

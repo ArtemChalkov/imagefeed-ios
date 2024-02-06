@@ -19,11 +19,20 @@ final class ImagesListService {
     
     private var lastLoadedPage: Int?
     
+    private var task: URLSessionTask?
+    
     func fetchPhotosNextPage(completion: @escaping ([Photo])->()) {
         
         
+        if task != nil {
+            print("return ->", #function)
+            return
+        }
         
         let nextPage = lastLoadedPage == nil ? 1 : lastLoadedPage! + 1
+        
+        //if lastLoadedPage == nextPage { return }
+        //task?.cancel()
         
         lastLoadedPage = nextPage
         
@@ -80,23 +89,22 @@ final class ImagesListService {
                     self.photos = photos
                     print("->", photos)
                     
+                    self.task = nil
+                    
                     completion(photos)
                 }
             } catch {
                 print(error)
             }
         }
+        self.task = task
         task.resume()
     }
     
     //Networking Model -> Presentation Model
     func convert(photosResult: [PhotoResult]) -> [Photo] {
-        
-        //let isoDateFormatter = DateFormatter()
-        //isoDateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
-        //isoDateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
-        
-        let isoDateFormatter = ISO8601DateFormatter()
+
+        let isoDateFormatter = DateFormatter.iso6601Formatter
         
         var photos: [Photo] = []
         for item in photosResult {
