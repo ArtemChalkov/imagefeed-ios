@@ -14,7 +14,6 @@ final class ImagesListService {
     
     static let DidChangeNotification = Notification.Name(rawValue: "ImageListProviderDidChange")
     
-    
     private (set) var photos: [Photo] = []
     
     private var lastLoadedPage: Int?
@@ -23,7 +22,6 @@ final class ImagesListService {
     
     func fetchPhotosNextPage(completion: @escaping ([Photo])->()) {
         
-        
         if task != nil {
             print("return ->", #function)
             return
@@ -31,20 +29,9 @@ final class ImagesListService {
         
         let nextPage = lastLoadedPage == nil ? 1 : lastLoadedPage! + 1
         
-        //if lastLoadedPage == nextPage { return }
-        //task?.cancel()
-        
         lastLoadedPage = nextPage
         
         print(lastLoadedPage)
-        
-        
-        
-//        if lastLoadedPage == nil {
-//            lastLoadedPage = 1
-//        } else {
-//            lastLoadedPage = lastLoadedPage! + 1
-//        }
         
         //1. URL + Parameters
         var urlComponents = URLComponents()
@@ -75,8 +62,7 @@ final class ImagesListService {
             print("->->", data.prettyPrintedJSONString)
             
             self.decoder.keyDecodingStrategy = .convertFromSnakeCase
-            //decoder.dateDecodingStrategy = .
-            
+        
             do {
                 print(Thread.current) //UI крутится на main-потоке (1-поток)
                 let photosResult = try self.decoder.decode([PhotoResult].self, from: data)
