@@ -10,8 +10,14 @@ struct Profile: Codable {
     
 }
 
+protocol ProfileServiceProtocol: AnyObject {
+    
+    func fetchProfile(_ token: String, completion: @escaping (Result<Profile, Error>) -> Void)
+    
+    var profile: Profile? { get }
+}
 
-final class ProfileService {
+final class ProfileService: ProfileServiceProtocol {
     
     static let shared = ProfileService()
     

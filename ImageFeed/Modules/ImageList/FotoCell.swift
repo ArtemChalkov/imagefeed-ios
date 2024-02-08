@@ -63,6 +63,9 @@ final class FotoCell: UITableViewCell {
         var button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         
+        
+        button.accessibilityIdentifier = "like button off"
+       
         button.setImage(UIImage(named: "LikeNo"), for: .normal)
         button.setImage(UIImage(named: "Like"), for: .selected)
         
@@ -115,6 +118,12 @@ extension FotoCell {
         //likeButton.isSelected = photo.isLiked
         
         likeButton.isSelected = isLiked
+        
+        if likeButton.isSelected == true {
+            likeButton.accessibilityIdentifier = "like button on"
+        } else {
+            likeButton.accessibilityIdentifier = "like button off"
+        }
     }
 }
 

@@ -7,35 +7,117 @@
 
 import XCTest
 
-final class ImageFeedUITests: XCTestCase {
+import XCTest
 
+class ImageFeedUITests: XCTestCase {
+    
+    private let app = XCUIApplication() // переменная приложения
+    
     override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-
-        // In UI tests it is usually best to stop immediately when a failure occurs.
-        continueAfterFailure = false
-
-        // In UI tests it’s important to set the initial state - such as interface orientation - required for your tests before they run. The setUp method is a good place to do this.
+        continueAfterFailure = false // настройка выполнения тестов, которая прекратит выполнения тестов, если в тесте что-то пошло не так
+        
+        app.launch() // запускаем приложение перед каждым тестом
     }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+    
+    func testAuth() throws {
+        // тестируем сценарий авторизации
+        
+        // Нажать кнопку авторизации
+        app.buttons["Authenticate"].tap()
+        
+        // Подождать, пока экран авторизации открывается и загружается
+        let webView = app.webViews["UnsplashWebView"]
+        
+        print(app.debugDescription) 
+        
+        XCTAssertTrue(webView.waitForExistence(timeout: 5))
+        
+        
+        // Ввести данные в форму
+        let loginTextField = webView.descendants(matching: .textField).element
+        XCTAssertTrue(loginTextField.waitForExistence(timeout: 5))
+        
+        loginTextField.tap()
+        loginTextField.typeText("F9152005012@yandex.ru")
+        webView.swipeUp()
+        
+        
+        let passwordTextField = webView.descendants(matching: .secureTextField).element
+        XCTAssertTrue(passwordTextField.waitForExistence(timeout: 5))
+        
+        passwordTextField.tap()
+        passwordTextField.typeText("Dbrf09022012")
+        webView.swipeUp()
+        
+        // Нажать кнопку логина
+        webView.buttons["Login"].tap()
+            
+        // Подождать, пока открывается экран ленты
+        let tablesQuery = app.tables
+        let cell = tablesQuery.children(matching: .cell).element(boundBy: 0)
+            
+        XCTAssertTrue(cell.waitForExistence(timeout: 5))
     }
-
-    func testExample() throws {
-        // UI tests must launch the application that they test.
-        let app = XCUIApplication()
-        app.launch()
-
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+    
+    func testFeed() throws {
+        // тестируем сценарий ленты
+        
+        // Подождать, пока открывается и загружается экран ленты
+        
+        let tablesQuery = app.tables
+        
+        let cell = tablesQuery.children(matching: .cell).element(boundBy: 0)
+            
+        
+        // Сделать жест «смахивания» вверх по экрану для его скролла
+        
+        cell.swipeUp()
+        
+        sleep(2)
+        
+        // Поставить лайк в ячейке верхней картинки
+        // Отменить лайк в ячейке верхней картинки
+        
+        let cellToLike = tablesQuery.children(matching: .cell).element(boundBy: 1)
+            
+        cellToLike.buttons["like button off"].tap()
+        cellToLike.buttons["like button on"].tap()
+        
+        sleep(2)
+        
+        // Нажать на верхнюю ячейку
+        
+        cellToLike.tap()
+            
+        sleep(2)
+        
+        // Подождать, пока картинка открывается на весь экран
+        // Увеличить картинку
+        // Уменьшить картинку
+        
+        let image = app.scrollViews.images.element(boundBy: 0)
+           // Zoom in
+       image.pinch(withScale: 3, velocity: 1) // zoom in
+       // Zoom out
+       image.pinch(withScale: 0.5, velocity: -1)
+        
+        // Вернуться на экран ленты
+        
+        let navBackButtonWhiteButton = app.buttons["nav back button white"]
+        navBackButtonWhiteButton.tap()
     }
-
-    func testLaunchPerformance() throws {
-        if #available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 7.0, *) {
-            // This measures how long it takes to launch your application.
-            measure(metrics: [XCTApplicationLaunchMetric()]) {
-                XCUIApplication().launch()
-            }
-        }
+    
+    func testProfile() throws {
+        // тестируем сценарий профиля
+        
+        sleep(3)
+        app.tabBars.buttons.element(boundBy: 1).tap()
+        
+        XCTAssertTrue(app.staticTexts["Name Lastname"].exists)
+        XCTAssertTrue(app.staticTexts["@username"].exists)
+        
+        app.buttons["logout button"].tap()
+        
+        app.alerts["Bye bye!"].scrollViews.otherElements.buttons["Yes"].tap()
     }
 }

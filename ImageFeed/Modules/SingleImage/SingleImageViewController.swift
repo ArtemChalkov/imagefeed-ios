@@ -38,6 +38,8 @@ class SingleImageViewController: UIViewController {
         button.widthAnchor.constraint(equalToConstant: 24).isActive = true
         button.heightAnchor.constraint(equalToConstant: 24).isActive = true
         
+        button.accessibilityIdentifier = "nav back button white"
+        
         button.addTarget(nil, action: #selector(backButtonTapped), for: .touchUpInside)
         return button
     }()
