@@ -9,14 +9,16 @@ import UIKit
 
 class SingleImageViewController: UIViewController {
     
-    var photo: UIImage?
+    var photoUrl: URL?
+    
+    var photo: Photo?
     
     lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         
-        scrollView.minimumZoomScale = 1
-        scrollView.maximumZoomScale = 1.25
+        scrollView.minimumZoomScale = 0.25
+        scrollView.maximumZoomScale = 1
         scrollView.delegate = self
         
         return scrollView
@@ -24,7 +26,7 @@ class SingleImageViewController: UIViewController {
     
     var photoImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
+        imageView.contentMode = .center
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
@@ -55,8 +57,20 @@ class SingleImageViewController: UIViewController {
         return button
     }()
     
-    func update(_ photo: UIImage) {
+    func update(_ photo: Photo) {
+        
         self.photo = photo
+        
+        self.photoUrl = URL(string: photo.largeImageURL)
+        
+        let screenWidth = photo.size.width
+        let screenHeight = photo.size.height
+        
+        print(screenWidth, screenHeight)
+        
+        photoImageView.heightAnchor.constraint(equalToConstant: screenHeight).isActive = true
+        photoImageView.widthAnchor.constraint(equalToConstant: screenWidth).isActive = true
+        
     }
     
     override func viewDidLoad() {
@@ -68,7 +82,23 @@ class SingleImageViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        photoImageView.image = self.photo
+        
+        //photoImageView.image = self.photo
+        
+        //photoImageView.kf.setImage(with: photoUrl)
+        
+        UIBlockingProgressHUD.show()
+        photoImageView.kf.setImage(with: photoUrl) { result in
+            switch result {
+            case .success(_):
+                
+                UIBlockingProgressHUD.dismiss()
+                
+            case .failure(let error):
+                print(error)
+            }
+        }
+        
     }
     
     func setupViews() {
@@ -92,10 +122,12 @@ class SingleImageViewController: UIViewController {
         photoImageView.rightAnchor.constraint(equalTo: scrollView.rightAnchor, constant: 0).isActive = true
         photoImageView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: 0).isActive = true
  
-        let screenWidth = UIScreen.main.bounds.width
-        let screenHeight = UIScreen.main.bounds.height
-        photoImageView.heightAnchor.constraint(equalToConstant: screenHeight).isActive = true
-        photoImageView.widthAnchor.constraint(equalToConstant: screenWidth).isActive = true
+        //let screenWidth = UIScreen.main.bounds.width //photoImageView.image?.size.width ?? 0 //
+        //let screenHeight = UIScreen.main.bounds.height //photoImageView.image?.size.height ?? 0  //
+        
+        
+        photoImageView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
+        photoImageView.centerYAnchor.constraint(equalTo: scrollView.centerYAnchor).isActive = true
         
         shareButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -51).isActive = true
         shareButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0).isActive = true
@@ -108,7 +140,7 @@ class SingleImageViewController: UIViewController {
     //MARK: - Event Handler
     @objc func shareButtonTapped(_ sender: UIButton) {
         
-        if let image = self.photo {
+        if let image = self.photoImageView.image {
             let share = UIActivityViewController(
                 activityItems: [image],
                 applicationActivities: nil
