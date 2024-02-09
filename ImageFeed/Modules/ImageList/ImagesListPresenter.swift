@@ -3,7 +3,6 @@
 //  ImageFeed
 //
 
-
 import Foundation
 
 protocol ImageListPresenterProtocol: AnyObject {
@@ -24,7 +23,6 @@ protocol ImageListPresenterProtocol: AnyObject {
     func getPhotos() -> [Photo]
     
     func update(_ index: Int, newPhoto: Photo)
-        
 }
 
 class ImageListPresenter: ImageListPresenterProtocol {
@@ -32,7 +30,6 @@ class ImageListPresenter: ImageListPresenterProtocol {
     func viewDidAppear() {
         self.fetchPhotosNextPage()
     }
-    
     
     weak var view: ImagesListViewControllerProtocol?
     
@@ -53,11 +50,11 @@ class ImageListPresenter: ImageListPresenterProtocol {
     }
     
     func fetchPhotosNextPage() {
-        imageListService.fetchPhotosNextPage { photos in
+        imageListService.fetchPhotosNextPage { [weak self] photos in
+            guard let self else { return }
             
             self.photos += photos
-            
-            //ImagesListService.DidChangeNotification
+
             NotificationCenter.default                                     // 1
                 .post(                                                     // 2
                     name: ImagesListService.DidChangeNotification,       // 3

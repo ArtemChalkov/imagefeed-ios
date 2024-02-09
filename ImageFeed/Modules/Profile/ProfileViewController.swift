@@ -117,9 +117,6 @@ class ProfileViewController: UIViewController & ProfileViewControllerProtocol {
         okAction.accessibilityIdentifier = "Yes"
     
         refreshAlert.addAction(okAction)
-        
-        
-        
         refreshAlert.addAction(UIAlertAction(title: "Нет", style: .cancel, handler: { (action: UIAlertAction!) in
             print("Handle Cancel Logic here")
         }))
@@ -131,9 +128,9 @@ class ProfileViewController: UIViewController & ProfileViewControllerProtocol {
     //MARK: - Update View
     func setProfile(_ profile: Profile) {
         
-        self.profileNameLabel.text = profile.name
-        self.nikNameLabel.text = "@\(profile.username)"
-        self.statusLabel.text = profile.bio
+        profileNameLabel.text = profile.name
+        nikNameLabel.text = "@\(profile.username)"
+        statusLabel.text = profile.bio
     }
     
     func setAvatar(_ url: URL) {

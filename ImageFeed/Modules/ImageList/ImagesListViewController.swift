@@ -55,8 +55,6 @@ final class ImagesListViewController: UIViewController & ImagesListViewControlle
         super.viewWillAppear(animated)
         
         presenter?.viewWillAppear()
-        //hideNavBar()
-        
     }
     
     func hideNavBar() {
@@ -67,17 +65,14 @@ final class ImagesListViewController: UIViewController & ImagesListViewControlle
         navigationController?.setNavigationBarHidden(false, animated: true)
     }
     
-    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         presenter?.viewWillDisappear()
-        //showNavBar()
     }
     
     deinit {
         removeObserver()
     }
-    
 }
 
 //MARK: - Business Logic
@@ -160,7 +155,6 @@ extension ImagesListViewController: UITableViewDataSource, UITableViewDelegate {
         
         let photos: [Photo] = presenter?.getPhotos() ?? []
         
-        
         if let index = photos.firstIndex(where: { $0.id == photoId }) {
             
             let photo = photos[index]
@@ -169,7 +163,7 @@ extension ImagesListViewController: UITableViewDataSource, UITableViewDelegate {
             
             UIBlockingProgressHUD.show()
             
-            self.presenter?.imageListService.changeLike(photoId: photoId, isLike: isLike) { result in
+            presenter?.imageListService.changeLike(photoId: photoId, isLike: isLike) { result in
                 
                 switch result {
                 case .success():
@@ -181,7 +175,6 @@ extension ImagesListViewController: UITableViewDataSource, UITableViewDelegate {
                     UIBlockingProgressHUD.dismiss()
                 }
             }
-            
             
             func changeToNewPhoto(_ photo: Photo) {
                 let newPhoto = Photo(
@@ -195,8 +188,6 @@ extension ImagesListViewController: UITableViewDataSource, UITableViewDelegate {
                 )
                 
                 presenter?.update(index, newPhoto: newPhoto)
-                
-                //photos[index] = newPhoto
             }
         }
     }
@@ -211,7 +202,7 @@ extension ImagesListViewController: UITableViewDataSource, UITableViewDelegate {
         cell.backgroundColor = Colors.ypBlack
         cell.update(photo)
         
-        cell.setIsLiked(!photo.isLiked)
+        cell.setIsLiked(photo.isLiked)
         
         cell.onLikeButtonTapped = { [weak self] photoId in
             guard let self else { return }
@@ -222,13 +213,11 @@ extension ImagesListViewController: UITableViewDataSource, UITableViewDelegate {
         return cell
     }
     
-    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         let photos: [Photo] = presenter?.getPhotos() ?? []
         
         let photo = photos[indexPath.row]
-        //let photoImage = UIImage(named: photo.thumbImageURL)
         let singleImageController = SingleImageViewController()
         
         singleImageController.modalPresentationStyle = .fullScreen
@@ -237,7 +226,6 @@ extension ImagesListViewController: UITableViewDataSource, UITableViewDelegate {
         singleImageController.photoUrl = URL(string: photo.largeImageURL)//= UIImage(named: photo.largeImageURL)
         
         singleImageController.update(photo)
-        
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

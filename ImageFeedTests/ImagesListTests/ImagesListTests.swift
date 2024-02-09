@@ -7,9 +7,7 @@
 import XCTest
 
 class ImagesListPresenterSpy: ImageListPresenterProtocol {
-    
-  
-    
+
     var view: ImageFeed.ImagesListViewControllerProtocol?
     
     var viewWillAppearCalled = false
@@ -43,8 +41,6 @@ class ImagesListPresenterSpy: ImageListPresenterProtocol {
     func update(_ index: Int, newPhoto: ImageFeed.Photo) {
         
     }
-    
-    
 }
 
 final class ImagesListTests: XCTestCase {
@@ -84,8 +80,5 @@ final class ImagesListTests: XCTestCase {
         //then
         XCTAssertTrue(presenter.viewDidAppearCalled) //behaviour verification
     }
-    
-    //fetchNewPhotos
-    
-    
+
 }

@@ -64,7 +64,6 @@ class ProfileViewControllerSpy: ProfileViewControllerProtocol {
         navigateToSplashScreenCalled = true
     }
     
-    
 }
 
 final class ProfileTests: XCTestCase {
@@ -101,15 +100,12 @@ final class ProfileTests: XCTestCase {
         XCTAssertTrue(presenter.exitButtonTappedCalled) //behaviour verification
     }
 
-    
     func testPresenterLogoutCallsShowAlert() {
         
         //given
         let viewController = ProfileViewControllerSpy()
         
         let presenter = ProfilePresenter()
-        
-        //viewController.configure(presenter)
         
         viewController.presenter = presenter
         presenter.view = viewController

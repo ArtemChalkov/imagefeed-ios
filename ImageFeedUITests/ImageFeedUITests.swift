@@ -38,7 +38,7 @@ class ImageFeedUITests: XCTestCase {
         XCTAssertTrue(loginTextField.waitForExistence(timeout: 5))
         
         loginTextField.tap()
-        loginTextField.typeText("F9152005012@yandex.ru")
+        loginTextField.typeText("")
         webView.swipeUp()
         
         
@@ -46,7 +46,7 @@ class ImageFeedUITests: XCTestCase {
         XCTAssertTrue(passwordTextField.waitForExistence(timeout: 5))
         
         passwordTextField.tap()
-        passwordTextField.typeText("Dbrf09022012")
+        passwordTextField.typeText("")
         webView.swipeUp()
         
         // Нажать кнопку логина
