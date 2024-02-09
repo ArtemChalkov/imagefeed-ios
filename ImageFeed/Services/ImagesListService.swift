@@ -6,7 +6,12 @@
 
 import Foundation
 
-final class ImagesListService {
+protocol ImagesListServiceProtocol {
+    var photos: [Photo] { get }
+    func fetchPhotosNextPage(completion: @escaping ([Photo])->())
+}
+
+final class ImagesListService: ImagesListServiceProtocol {
     
     let session = URLSession.shared
     let decoder = JSONDecoder.init()

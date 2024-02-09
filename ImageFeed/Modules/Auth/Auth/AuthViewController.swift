@@ -14,7 +14,6 @@ protocol AuthViewControllerDelegate: AnyObject {
 final class AuthViewController:  UIViewController {
     
     var delegate: AuthViewControllerDelegate?
-    
 
     let oauth2TokenStorage = OAuth2TokenStorage()
     
@@ -29,6 +28,7 @@ final class AuthViewController:  UIViewController {
     
     var enterButton: UIButton = {
        var button = UIButton()
+        button.accessibilityIdentifier = "Authenticate"
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Войти", for: .normal)
         button.setTitleColor(Colors.ypBlack, for: .normal)
@@ -66,6 +66,13 @@ final class AuthViewController:  UIViewController {
         
         print(Thread.current)
         let webViewVC = WebViewViewController()
+        let authHelper = AuthHelper()
+        let webViewPresenter = WebViewPresenter(authHelper: authHelper)
+        
+        
+        webViewVC.presenter = webViewPresenter
+        webViewPresenter.view = webViewVC
+        
         webViewVC.modalPresentationStyle = .fullScreen
         webViewVC.delegate = self
         present(webViewVC, animated: true)
